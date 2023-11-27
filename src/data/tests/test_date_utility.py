@@ -5,7 +5,8 @@ from ..utils.date_utility import (
     validate_date_format,
     validate_date_range,
     generate_date_list,
-    generate_date_list_n_days_from_today
+    generate_date_list_n_days_from_today,
+    format_date
 )
 
 
@@ -55,3 +56,44 @@ def test_generate_date_list_invalid_range():
     to_date_str = date(2023, 2, 28)
     with pytest.raises(ValueError):
         generate_date_list(from_date_str, to_date_str)
+
+
+def test_format_date_valid_date_to_str():
+    input_date = date(2023, 11, 27)
+    date_format = "%Y-%m-%d"
+    result = format_date(input_date, date_format)
+    assert result == "2023-11-27"
+
+
+def test_format_date_valid_str_to_date():
+    input_date = "2023-11-27"
+    date_format = "%Y-%m-%d"
+    result = format_date(input_date, date_format)
+    assert result == date(2023, 11, 27)
+
+
+def test_format_date_invalid_input():
+    input_date = 123
+    with pytest.raises(ValueError):
+        format_date(input_date)
+
+
+def test_format_date_invalid_date_format():
+    input_date = "2023-11-27"
+    invalid_date_format = "%d-%m-%Y"
+    with pytest.raises(ValueError):
+        format_date(input_date, invalid_date_format)
+
+
+def test_format_date_invalid_date_string():
+    input_date = "2023-11-XX"
+    date_format = "%Y-%m-%d"
+    with pytest.raises(ValueError):
+        format_date(input_date, date_format)
+
+
+def test_format_date_invalid_date_object():
+    input_date = object()
+    date_format = "%Y-%m-%d"
+    with pytest.raises(ValueError):
+        format_date(input_date, date_format)
