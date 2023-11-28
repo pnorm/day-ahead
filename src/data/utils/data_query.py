@@ -1,12 +1,17 @@
 from datetime import date
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 from typing import ClassVar
 
 
 class BaseDataQuery(BaseModel):
-    current_date: date
+    current_date: date = Field(...)
     base_url: ClassVar[str]
     feature: str
+    complete_url: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.complete_url = self.generate_url()
 
     @classmethod
     def __get_validators__(cls):
