@@ -17,7 +17,7 @@ class FileManager:
         self.feature_path = self._get_feature_path()
 
     def _get_feature_path(self) -> str:
-        if self.stage == 'raw':
+        if self.stage == 'raw' or self.stage == 'interim':
             return os.path.join(self.stage_path, self.feature)
         else:
             return self.stage_path
@@ -44,14 +44,16 @@ class FileManager:
         full_path = self._create_full_path(current_date)
         return os.path.isfile(full_path)
 
-    def write(self, data, current_date: str):
+    def write(self, data, current_date: str, **kwargs):
         self._ensure_directories_exist()
         full_path = self._create_full_path(current_date)
 
-        self.file_handler.write(data, full_path)
+        self.file_handler.write(data, full_path, **kwargs)
 
-    def open(self):
-        return self.file_handler.read(self.filename)
+    def read(self, filename):
+        self._ensure_directories_exist()
+        path = os.path.join(self.feature_path, filename)
+        return self.file_handler.read(path)
 
     def find_by_date(self, date):
         pass
@@ -86,8 +88,14 @@ class FileManager:
         return filtered_files
 
     def show_last_file(self):
-        return self.show_files()[-1]
+        try:
+            return self.show_files()[-1]
+        except IndexError:
+            return None
     
     def show_last_file_date(self):
+        self._ensure_directories_exist()
         filename = self.show_last_file()
-        return self.find_date_in_filename(filename)
+        if filename is not None:
+            return self.find_date_in_filename(filename)
+        return None

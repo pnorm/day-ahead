@@ -10,7 +10,7 @@ class FileHandler(ABC):
         pass
 
     @abstractmethod
-    def read(self):
+    def read(self, path):
         pass
 
     @property
@@ -32,8 +32,11 @@ class PickleHandler(FileHandler):
         except Exception as e:
             logger.debug(f"Error creating file {path}: {e}")
 
-    def read(self):
-        pass
+    def read(self, path):
+        with open(path, 'rb') as file:
+            data = pickle.load(file)
+            logger.debug(f"File: {path} successfully opened.")
+        return data
 
 
 class CSVHandler(FileHandler):
@@ -41,8 +44,9 @@ class CSVHandler(FileHandler):
     def extension(self):
         return ".csv"
 
-    def write(self, data):
-        pass
+    def write(self, data, path, **kwargs):
+        data.to_csv(path, **kwargs)
+        logger.debug(f"Data successfully saved to {path}")
 
     def read(self):
         pass
