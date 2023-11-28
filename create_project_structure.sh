@@ -3,6 +3,10 @@
 # Directory structure
 directories=(
     "api"
+    "data/external"
+    "data/interim"
+    "data/processed"
+    "data/raw/"
     "models"
     "notebooks"
     "references"
