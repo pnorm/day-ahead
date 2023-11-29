@@ -66,16 +66,16 @@ def main():
             stage="external",
             file_handler=CSVHandler()
         )
-        interim_file_manager = FileManager(
+        processed_file_manager = FileManager(
             feature="TGE",
-            stage="interim",
+            stage="processed",
             file_handler=CSVHandler()
         )
         
         df = external_file_manager.read("day-ahead-prices.csv", index_col='date')
         processed_df = DataProcessor.process_external(df=df)
         logger.debug(f"{processed_df.head()}")
-        interim_file_manager.write(processed_df, "interim_historical_fixing.csv")
+        processed_file_manager.write(processed_df, "fixing.csv")
 
     if args.site == 'tge':
         feature = "TGE"

@@ -10,6 +10,11 @@ import pandas as pd
 
 class DataProcessor:
     @staticmethod
+    def combine():
+        pass
+
+
+    @staticmethod
     def process_wind(df):
         # Rename columns
         df.rename(columns={
@@ -124,6 +129,8 @@ class DataProcessor:
         df_copy.fillna(0, inplace=True)
         df_copy.loc[:, 'OT'] = df_copy['OT'].astype(str).str.replace(',', '.').replace('-', np.nan).replace('', np.nan).astype(float)
         df_copy.loc[:, 'fixing_i_volume'] = df_copy['fixing_i_volume'].astype(str).str.replace(',', '.').replace('-', np.nan).replace('', np.nan).astype(float)
+
+        df_copy = df_copy[['fixing_i_volume', 'OT']]
 
         return df_copy
 
