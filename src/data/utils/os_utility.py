@@ -44,16 +44,19 @@ class FileManager:
         full_path = self._create_full_path(current_date)
         return os.path.isfile(full_path)
 
-    def write(self, data, current_date: str, **kwargs):
+    def write(self, data, filename: str, **kwargs):
         self._ensure_directories_exist()
-        full_path = self._create_full_path(current_date)
+        if self.find_date_in_filename(filename) is not None:
+            full_path = self._create_full_path(filename)
+        else:
+            full_path = os.path.join(self.stage_path, filename)
 
         self.file_handler.write(data, full_path, **kwargs)
 
-    def read(self, filename):
+    def read(self, filename, **kwargs):
         self._ensure_directories_exist()
         path = os.path.join(self.feature_path, filename)
-        return self.file_handler.read(path)
+        return self.file_handler.read(path, **kwargs)
 
     def find_by_date(self, date):
         pass
@@ -64,8 +67,8 @@ class FileManager:
 
         if match:
             date_str = match.group()
-            # return date.fromisoformat(date_str)
             return date_str
+        return None
         
     def find_by_feature(self, feature):
         pass

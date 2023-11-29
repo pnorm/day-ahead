@@ -1,20 +1,11 @@
 import argparse
 from datetime import date
-import time
 
 from loguru import logger
 
 from utils.date_utility import (
     validate_date_format,
-    validate_date_range,
-    generate_date_list,
-    generate_date_list_n_days_from_today
 )
-from utils.data_query import (
-    PSEDataQuery,
-    TGEDataQuery
-)
-from utils.fetcher import DataFetcher
 from utils.file_handler import PickleHandler, CSVHandler
 from utils.os_utility import FileManager
 from utils.transform import DataProcessor
@@ -29,7 +20,7 @@ def main():
 
     # Arguments for historical subparser
     parser.add_argument(
-        "-s", "--site", choices=['pse', 'tge'], required=True, dest="site", nargs="?",
+        "-s", "--site", choices=['pse', 'tge', 'external'], required=True, dest="site", nargs="?",
         default="pse", type=str, action="store", help="Choose site. PSE - polskie sieci energetyczne, TGE - towarowa giełda energii"    
     )
 
@@ -46,7 +37,6 @@ def main():
     args = parser.parse_args()
 
     if args.site == 'pse':
-        # if args.feature == 'PL_GEN_WIATR' or:
         raw_file_manager = FileManager(
             feature=args.feature,
             stage="raw",
@@ -58,6 +48,12 @@ def main():
         interim_file_manager = FileManager(
             feature=args.feature,
             stage="interim",
+            file_handler=CSVHandler()
+        )
+
+        processed_file_manager = FileManager(
+            feature=args.feature,
+            stage="processed",
             file_handler=CSVHandler()
         )
 
@@ -74,10 +70,51 @@ def main():
                 if args.feature == 'PL_GEN_MOC_JW_EPS':
                     processed_df = DataProcessor.process_power(df)
                 interim_file_manager.write(processed_df, file_date)
-            
+
+
+    if args.site == 'external':
+        external_file_manager = FileManager(
+            feature="TGE",
+            stage="external",
+            file_handler=CSVHandler()
+        )
+        interim_file_manager = FileManager(
+            feature="TGE",
+            stage="interim",
+            file_handler=CSVHandler()
+        )
+        
+        df = external_file_manager.read("day-ahead-prices.csv", index_col='date')
+        processed_df = DataProcessor.process_external(df=df)
+        logger.debug(f"{processed_df.head()}")
+        interim_file_manager.write(processed_df, "interim_historical_fixing.csv")
 
     if args.site == 'tge':
-        pass
+        feature = "TGE"
+        raw_file_manager = FileManager(
+            feature=feature,
+            stage="raw",
+            file_handler=PickleHandler()
+        )
+
+        raw_files = raw_file_manager.show_files()
+
+        interim_file_manager = FileManager(
+            feature=feature,
+            stage="interim",
+            file_handler=CSVHandler()
+        )
+
+        last_file_date = interim_file_manager.show_last_file_date()
+
+        for file in raw_files:
+            current_date = interim_file_manager.find_date_in_filename(file)
+            if not interim_file_manager.file_exists(current_date) or current_date == last_file_date:
+                data = raw_file_manager.read(filename=file)
+                file_date = raw_file_manager.find_date_in_filename(file)
+                df = DataProcessor.parse_tge(data)
+                processed_df = DataProcessor.process_tge(df, current_date)
+                interim_file_manager.write(processed_df, file_date)
 
 
 if __name__ == "__main__":

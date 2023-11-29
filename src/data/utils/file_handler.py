@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import pickle
 
+import pandas as pd
 from loguru import logger
 
 
@@ -48,8 +49,8 @@ class CSVHandler(FileHandler):
         data.to_csv(path, **kwargs)
         logger.debug(f"Data successfully saved to {path}")
 
-    def read(self):
-        pass
+    def read(self, path, **kwargs):
+        return pd.read_csv(path, **kwargs)
 
 
 class JSONHandler(FileHandler):

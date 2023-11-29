@@ -1,6 +1,8 @@
 import csv
+from datetime import date, datetime, timedelta
 from io import StringIO
 
+from bs4 import BeautifulSoup
 from loguru import logger
 import numpy as np
 import pandas as pd
@@ -72,6 +74,58 @@ class DataProcessor:
         result.fillna(0, inplace=True)
         result.index.name = 'date'
         return result
+    
+    @staticmethod
+    def process_external(df):
+        df.index = pd.to_datetime(df.index, format="%d.%m.%Y %H:%M")
+        df.drop(columns=['fixing_ii_price', 'fixing_ii_volume'], inplace=True)
+
+        df_copy = df.copy()
+        df_copy.rename(columns={f'fixing_i_price': 'OT'}, inplace=True)
+        df_copy = df_copy[['fixing_i_volume', 'OT']]
+
+        return df_copy
+    
+    @staticmethod
+    def parse_tge(html_code) -> pd.DataFrame:
+        # Parse the HTML code
+        soup = BeautifulSoup(html_code, 'html.parser')
+
+        # Find the table
+        table = soup.find('table', {'id': 'footable_kontrakty_godzinowe'})
+
+        # Extract data from the table
+        data = []
+        for row in table.find_all('tr'):
+            cols = row.find_all(['th', 'td'])
+            cols = [col.text.strip() for col in cols]
+            data.append(cols)
+
+        # Create a DataFrame from the scraped data
+        df = pd.DataFrame(data[2:-3], columns=data[1])
+
+        return df
+    
+    @staticmethod
+    def process_tge(df, current_date):
+        df = df.iloc[:, :3]
+        df_copy = df.copy()
+
+        df_copy.rename(columns={
+            "Czas": "hour", 
+            "Kurs (PLN/MWh)": "OT",
+            "Wolumen (MWh)": "fixing_i_volume",
+        }, inplace=True)
+
+        df_copy['date'] = [datetime.fromisoformat(current_date) + timedelta(hours=i) for i in range(len(df_copy))]
+        df_copy.index = df_copy['date']
+        df_copy.drop(['hour', 'date'], axis=1, inplace=True)
+
+        df_copy.fillna(0, inplace=True)
+        df_copy.loc[:, 'OT'] = df_copy['OT'].astype(str).str.replace(',', '.').replace('-', np.nan).replace('', np.nan).astype(float)
+        df_copy.loc[:, 'fixing_i_volume'] = df_copy['fixing_i_volume'].astype(str).str.replace(',', '.').replace('-', np.nan).replace('', np.nan).astype(float)
+
+        return df_copy
 
     @staticmethod
     def decode(data):
