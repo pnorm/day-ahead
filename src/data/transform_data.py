@@ -45,12 +45,6 @@ def main():
             file_handler=CSVHandler()
         )
 
-        processed_file_manager = FileManager(
-            feature=args.feature,
-            stage="processed",
-            file_handler=CSVHandler()
-        )
-
         last_file_date = interim_file_manager.show_last_file_date()
 
         for file in raw_files:
