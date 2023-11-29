@@ -1,11 +1,7 @@
 import argparse
-from datetime import date
 
 from loguru import logger
 
-from utils.date_utility import (
-    validate_date_format,
-)
 from utils.file_handler import PickleHandler, CSVHandler
 from utils.os_utility import FileManager
 from utils.transform import DataProcessor
@@ -29,8 +25,6 @@ def main():
 
     # Based on the value of --site, conditionally add additional arguments
     if args.site == 'pse':
-        parser.add_argument('--from_date', type=validate_date_format, dest="from_date", default='2020-01-01', help='Specify the start date')
-        parser.add_argument('--to_date', type=validate_date_format, dest="to_date", default=date.today().strftime("%Y-%m-%d"), help='Specify the end date')
         parser.add_argument('--feature', choices=['PL_GEN_WIATR', 'PL_GEN_MOC_JW_EPS'], type=str, dest="feature", default="PL_GEN_WIATR", help='Specify the feature')
 
     # Parse the command-line arguments

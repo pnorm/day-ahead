@@ -13,10 +13,10 @@ class DataProcessor:
     def process_wind(df):
         # Rename columns
         df.rename(columns={
-            "Data": "date", 
+            "Data": "date",
             "Godzina": "hour",
             "Generacja źródeł wiatrowych": "wind",
-            "Generacja źródeł fotowoltaicznych": "solar"    
+            "Generacja źródeł fotowoltaicznych": "solar"
         }, inplace=True)
 
         # Create a copy to avoid SettingWithCopyWarning
