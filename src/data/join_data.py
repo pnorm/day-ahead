@@ -12,6 +12,8 @@ def join():
 
     final_df = final_outer[final_outer.index >= '2020-04-20'].copy()
     final_df.fillna(0.0, inplace=True)
+    final_df.index = pd.to_datetime(final_df.index)
+    final_df = final_df[final_df.index.to_series().diff() != pd.Timedelta(minutes=30)]
     
     final_df.to_csv("../../data/processed/electricity.csv")
 
