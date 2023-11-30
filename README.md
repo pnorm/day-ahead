@@ -1,4 +1,4 @@
-Ze względu na niewystarczające dane predykcje są na 3 dni wstecz, tj. 2023-11-30 daje predykcje z 2023-11-27
+Ze względu na niewystarczające dane predykcje są na 3 dni wstecz, tj. 2023-11-30 daje predykcje z 2023-11-27.
 
 
 ```bash
@@ -9,12 +9,12 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-Pobieranie i przetwarzanie danych
-Aby pobierać i aktualizować automatycznie możemy ustawic cronjob
+Pobieranie i przetwarzanie danych.
+Aby pobierać i aktualizować automatycznie możemy ustawic cronjob.
 ```bash
 cd src/data
 # Pobieranie lub aktualizowanie danych
-./etl
+./etl.sh
 ```
 
 Uruchamianie api
