@@ -2,19 +2,19 @@
 
 # Directory structure
 directories=(
-    "api"
+    "api/utils"
     "data/external"
     "data/interim"
     "data/processed"
     "data/raw/"
-    "models"
+    # "models"
     "notebooks"
-    "references"
-    "reports/figures"
+    # "references"
+    # "reports/figures"
     "src/data/logs"
     "src/data/tests"
     "src/data/utils"
-    "src/features"
+    # "src/features"
     "src/models"
     "src/visualization"
 )
@@ -27,9 +27,11 @@ done
 echo "Directory structure created successfully!"
 
 src_directories=(
+    "api"
+    "api/utils"
     "src"
     "src/data"
-    "src/features"
+    # "src/features"
     "src/models"
     "src/visualization"
 )
