@@ -1,24 +1,51 @@
-#### Pobieranie dnaych historycznych
+Ze względu na niewystarczające dane predykcje są na 3 dni wstecz, tj. 2023-11-30 daje predykcje z 2023-11-27
+
+
 ```bash
-cd src/data
-python get_data.py --site='pse'
-python get_data.py --site='pse' --feature='PL_GEN_WIATR' --from_date='2020-01-01'
-python get_data.py --site='pse' --feature='PL_GEN_MOC_JW_EPS' --from_date='2020-01-01' --to_date='2023-11-27'
-python get_data.py --site='tge'
+git clone https://github.com/pnorm/day-ahead.git
+cd day-ahead
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
 ```
 
-#### Transformacje
+Pobieranie i przetwarzanie danych
+Aby pobierać i aktualizować automatycznie możemy ustawic cronjob
 ```bash
 cd src/data
-python transform_data.py --site='external'
-python transform_data.py --site='pse'
-python transform_data.py --site='pse' --feature='PL_GEN_WIATR'
-python transform_data.py --site='pse' --feature='PL_GEN_MOC_JW_EPS'
-python transform_data.py --site='tge'
+# Pobieranie lub aktualizowanie danych
+./etl
 ```
 
-#### Łączenie danych
+Uruchamianie api
 ```bash
-cd src/data
-...
+cd api
+uvicorn main:app --reload
+```
+
+
+Struktura folderów projektu
+```
+├── api
+│   └── utils
+├── data
+│   ├── external
+│   ├── interim
+│   │   ├── PL_GEN_MOC_JW_EPS
+│   │   ├── PL_GEN_WIATR
+│   │   └── TGE
+│   ├── processed
+│   └── raw
+│       ├── PL_GEN_MOC_JW_EPS
+│       ├── PL_GEN_WIATR
+│       └── TGE
+├── notebooks
+└── src
+    ├── data
+    │   ├── logs
+    │   ├── tests
+    │   └── utils
+    ├── features
+    ├── models
+    └── visualization
 ```
