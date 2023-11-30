@@ -1,12 +1,13 @@
 Ze względu na niewystarczające dane predykcje są na 3 dni wstecz, tj. 2023-11-30 daje predykcje z 2023-11-27.
 
-
+Najpierw należy uruchomic pnizsze komendy
 ```bash
 git clone https://github.com/pnorm/day-ahead.git
 cd day-ahead
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
+./create_project_structure.sh
 ```
 
 Pobieranie i przetwarzanie danych.
