@@ -4,16 +4,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.pipeline import Pipeline
 
-from data_preparation import split_data
-
-
-# Load and scale load iris data
-X_train, X_test, y_train, y_test = split_data()
+from data_preparation import split_data, load_data
 
 
 def create_model():
-    # Creating a pipeline with feature selection and a RandomForestRegressor
-    X_train, X_test, y_train, y_test = split_data()
+    df = load_data(filtered=True, path="../../data/processed/electricity.csv")
+    X_train, X_test, y_train, y_test = split_data(df)
     
     pipeline = Pipeline([
         ('feature_selection', SelectKBest(score_func=f_regression, k=10)),
@@ -24,3 +20,7 @@ def create_model():
     pipeline.fit(X_train, y_train)
 
     joblib.dump(pipeline, "model_random_forest_regressor.joblib")
+
+
+if __name__ == "__main__":
+    create_model()

@@ -9,8 +9,8 @@ from sklearn.model_selection import train_test_split
 OFFSET_DATE = (date.today() - timedelta(days=3)).isoformat()
 
 
-def load_data(filtered=True):
-    df = pd.read_csv("../data/processed/electricity.csv", index_col='date', parse_dates=True)
+def load_data(filtered=True, path="../data/processed/electricity.csv"):
+    df = pd.read_csv(path, index_col='date', parse_dates=True)
     if filtered:
         df_filtered = df[df.index < OFFSET_DATE].copy()
         return df_filtered
