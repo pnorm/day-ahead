@@ -53,3 +53,6 @@ touch env.sample
 
 echo "README.md .gitignore env.sample files created."
 
+unzip model.zip
+
+echo "Model unzipped successfully"
